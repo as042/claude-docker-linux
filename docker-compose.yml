@@ -7,7 +7,7 @@ services:
       - path: .env
         required: false
     volumes:
-      - ~/git:/workspace:rw
+      - ~/Documents/repos:/workspace:rw
       - ~/.claude:/home/node/.claude:rw
       - ~/.claude.json:/home/node/.claude.json:rw
       - ~/.gitconfig:/home/node/.gitconfig:ro
@@ -18,13 +18,7 @@ services:
       - conda:/opt/conda
       - uv-cache:/home/node/.cache/uv
     network_mode: bridge
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+
 
 volumes:
   pip-local:

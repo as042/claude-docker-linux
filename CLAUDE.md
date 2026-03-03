@@ -1,7 +1,7 @@
 # Claude Docker Linux
 
 ## Project overview
-Dockerized Claude Code for Linux. Runs claude-code in isolated container with host filesystem access limited to `~/git`.
+Dockerized Claude Code for Linux. Runs claude-code in isolated container with host filesystem access limited to `~/Documents/repos`.
 
 ## Key architecture decisions
 - **Auth**: OAuth via bind-mounted `~/.claude/.credentials.json` (from `claude login` on host). No API key.
@@ -33,4 +33,4 @@ Dockerized Claude Code for Linux. Runs claude-code in isolated container with ho
 - `docker compose run` does NOT map ports by default — must use `--service-ports` flag for Galaxy port 9090.
 - gh config directory mount shows empty inside container. Mount individual files instead.
 - Shell shortcuts (`cdl`/`cdlg`) require `source ~/.bashrc` or new terminal after adding to bashrc.
-- **GPU**: nvidia-container-toolkit required on host. compose `deploy.resources.reservations` passes all GPUs. If no NVIDIA GPU, container still starts fine (deploy section is a soft reservation).
+- **GPU**: GPU passthrough requires nvidia-container-toolkit on the host AND an NVIDIA GPU. The `deploy.resources.reservations` block is a hard requirement — without the toolkit installed, the container fails to start. If GPU support isn't needed, remove the `deploy` block from `docker-compose.yml`.
