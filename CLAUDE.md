@@ -18,12 +18,16 @@ Dockerized Claude Code for Linux. Runs claude-code in isolated container with ho
 - `Dockerfile` — image definition (node:20-bookworm base)
 - `docker-compose.yml` — service config, volumes, bind mounts, port 9090
 - `entrypoint.sh` — runtime setup (SSH, claude update, galaxy, MCP registration)
-- `run.sh` — host-side launcher (writes .env, clones skills, opens editor, runs container)
+- `run.sh` — host-side launcher (writes .env, clones skills, runs container; accepts `--service-ports` flag)
 - `.env` / `.env.example` — Galaxy credentials + GH_TOKEN (gitignored)
 
-## Shell shortcuts (in ~/.bashrc)
-- `cdl` — opens Sublime on current dir + launches container. No port mapping, can run multiple in parallel.
-- `cdlg` — same but with `--service-ports` to expose port 9090 for Galaxy. Only one at a time (port conflict otherwise).
+## Shell shortcuts (add to ~/.bashrc)
+```bash
+cdl()  { code "$(pwd)" </dev/null &>/dev/null & ~/Documents/repos/claude-docker-linux/run.sh "$@"; }
+cdlg() { code "$(pwd)" </dev/null &>/dev/null & ~/Documents/repos/claude-docker-linux/run.sh --service-ports "$@"; }
+```
+- `cdl` — opens VSCode on current dir + launches container. No port mapping, can run multiple in parallel.
+- `cdlg` — same but passes `--service-ports` to expose port 9090 for Galaxy. Only one at a time (port conflict otherwise).
 
 ## Gotchas
 - `docker-compose.yml` `env_file` must be `required: false` — `.env` may not exist if user runs `docker compose` directly without `run.sh`
@@ -33,4 +37,5 @@ Dockerized Claude Code for Linux. Runs claude-code in isolated container with ho
 - `docker compose run` does NOT map ports by default — must use `--service-ports` flag for Galaxy port 9090.
 - gh config directory mount shows empty inside container. Mount individual files instead.
 - Shell shortcuts (`cdl`/`cdlg`) require `source ~/.bashrc` or new terminal after adding to bashrc.
+- `code` must have stdin redirected (`</dev/null`) in the shortcuts — without it, VSCode's startup script briefly reads from the terminal, leaving Claude's TUI in a broken state where input is silently dropped.
 - **GPU**: GPU passthrough requires nvidia-container-toolkit on the host AND an NVIDIA GPU. The `deploy.resources.reservations` block is a hard requirement — without the toolkit installed, the container fails to start. If GPU support isn't needed, remove the `deploy` block from `docker-compose.yml`.

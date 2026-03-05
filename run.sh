@@ -17,9 +17,11 @@ if [ ! -d "$SKILLS_DIR" ]; then
     git clone https://github.com/anthropics/galaxy-skills.git "$SKILLS_DIR" 2>/dev/null || echo "Warning: could not clone galaxy-skills"
 fi
 
-# Open editor
-subl --add ~/git 2>/dev/null || true
-
 # Run claude container
 cd "$SCRIPT_DIR"
-docker compose run --rm claude "$@"
+if [[ "$1" == "--service-ports" ]]; then
+    shift
+    docker compose run --rm --service-ports claude "$@"
+else
+    docker compose run --rm claude "$@"
+fi
