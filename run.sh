@@ -3,19 +3,13 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# Write .env file from environment
+# Write .env file from environment (preserve existing values as fallback)
+EXISTING_GH_TOKEN=$(grep -s '^GH_TOKEN=' "$SCRIPT_DIR/.env" | cut -d= -f2-)
 cat > "$SCRIPT_DIR/.env" <<EOF
 GALAXY_URL=${GALAXY_URL:-}
 GALAXY_API_KEY=${GALAXY_API_KEY:-}
+GH_TOKEN=${GH_TOKEN:-$EXISTING_GH_TOKEN}
 EOF
-
-# Ensure galaxy-skills cloned on host (persists via bind mount)
-SKILLS_DIR="$HOME/.claude/skills/galaxy"
-if [ ! -d "$SKILLS_DIR" ]; then
-    echo "Cloning galaxy-skills..."
-    mkdir -p "$HOME/.claude/skills"
-    git clone https://github.com/anthropics/galaxy-skills.git "$SKILLS_DIR" 2>/dev/null || echo "Warning: could not clone galaxy-skills"
-fi
 
 # Run claude container
 cd "$SCRIPT_DIR"

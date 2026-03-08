@@ -1,6 +1,6 @@
 # Claude Docker Linux
 
-Run [Claude Code](https://docs.anthropic.com/en/docs/claude-code) in an isolated Docker container on Linux. Only `~/git` is visible to the container. Auth via bind-mounted `~/.claude` (OAuth from `claude login`, no API key needed).
+Run [Claude Code](https://docs.anthropic.com/en/docs/claude-code) in an isolated Docker container on Linux. Only `~/Documents/repos` is visible to the container. Auth via bind-mounted `~/.claude` (OAuth from `claude login`, no API key needed).
 
 Based on [nekrut/claude-code-docker](https://github.com/nekrut/claude-code-docker), adapted for Linux.
 
